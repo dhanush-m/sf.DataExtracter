@@ -7,6 +7,7 @@ const bldr = require('@basetime/bldr-sfmc');
 const xml2js = require('xml2js');
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const { Readable } = require('stream');
+const path = require('path');
 
 const app = express();
 let port = process.env.PORT || 5000;
@@ -576,6 +577,14 @@ app.get('/sfmc-assets', async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to retrieve SFMC assets', error: error.message });
   }
+});
+
+// Serve static files from the React frontend app
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+// Anything that doesn't match the above, send back index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
 });
 
 function startServer() {

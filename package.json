@@ -3,18 +3,23 @@
   "version": "1.0.0",
   "description": "SFMC Data Extractor",
   "scripts": {
-    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start": "cd backend && node server.js",
     "start:backend": "cd backend && npm start",
     "start:frontend": "cd frontend && npm start",
     "server": "cd backend && npm run dev",
     "client": "cd frontend && npm start",
     "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd frontend && npm run build",
+    "heroku-postbuild": "npm run install-all && npm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^6.2.0"
+  },
+  "engines": {
+    "node": "14.x"
   }
 }

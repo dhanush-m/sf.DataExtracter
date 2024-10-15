@@ -8,7 +8,7 @@
     "start:frontend": "cd frontend && npm start",
     "server": "cd backend && npm run dev",
     "client": "cd frontend && npm start",
-    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "install-all": "bash render-build.sh",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "cd frontend && npm run build",
     "heroku-postbuild": "bash render-build.sh"
@@ -20,6 +20,6 @@
     "concurrently": "^6.2.0"
   },
   "engines": {
-    "node": "14.x"
+    "node": ">=16.x"
   }
 }

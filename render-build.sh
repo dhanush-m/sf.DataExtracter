@@ -15,16 +15,21 @@ rm -rf frontend/node_modules
 rm -rf backend/node_modules
 
 echo "Installing root dependencies..."
-npm install --legacy-peer-deps
+npm ci --legacy-peer-deps || npm install --legacy-peer-deps --force
+
+echo "Auditing and fixing vulnerabilities in root..."
+npm audit fix --force
 
 echo "Installing frontend dependencies..."
 cd frontend
-npm install --legacy-peer-deps
+npm ci --legacy-peer-deps || npm install --legacy-peer-deps --force
+npm audit fix --force
 cd ..
 
 echo "Installing backend dependencies..."
 cd backend
-npm install --legacy-peer-deps
+npm ci --legacy-peer-deps || npm install --legacy-peer-deps --force
+npm audit fix --force
 cd ..
 
 # Build the project

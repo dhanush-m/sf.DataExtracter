@@ -1,0 +1,56 @@
+.data-display {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-container {
+  min-width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.sfmc-config {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sfmc-config input,
+.sfmc-config select {
+  padding: 8px;
+  font-size: 14px;
+}
+
+.sfmc-assets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sfmc-assets button {
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sfmc-assets button:hover {
+  background-color: #e0e0e0;
+}

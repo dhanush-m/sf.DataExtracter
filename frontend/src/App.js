@@ -11,7 +11,7 @@ function App() {
   const [accessToken, setAccessToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [extractedData, setExtractedData] = useState(null);
+  const [extractedData, setExtractedData] = useState({});
   const [selectedDataType, setSelectedDataType] = useState('');
   const [authSuccess, setAuthSuccess] = useState(false);
 
@@ -38,19 +38,21 @@ function App() {
   const handleExtract = async (type) => {
     setLoading(true);
     setError('');
-    setExtractedData(null);
     setSelectedDataType(type);
     try {
       const response = await axios.get(`http://localhost:5000/api/extract/${type}`, {
-        params: {
-          accessToken,
-          subdomain
-        }
+        params: { accessToken, subdomain }
       });
-      setExtractedData(response.data);
+      // For data extensions, pass the raw response data
+      if (type === 'dataExtensions') {
+        setExtractedData(response.data);
+      } else {
+        // For other types, assume the response is already in the correct format
+        setExtractedData(response.data);
+      }
       setLoading(false);
     } catch (error) {
-      setError(`Error extracting ${type}: ${error.message}`);
+      setError(`Failed to extract ${type}. Please try again.`);
       setLoading(false);
     }
   };
@@ -111,37 +113,14 @@ function App() {
           <Button variant="outlined" onClick={() => handleExtract('dataExtensions')} disabled={loading}>
             Data Extensions
           </Button>
-          <Button variant="outlined" onClick={() => handleExtract('automations')} disabled={loading}>
+          <Button variant="outlined" onClick={() => handleExtract('Automations')} disabled={loading}>
             Automations
           </Button>
-          <Button variant="outlined" onClick={() => handleExtract('subscribers')} disabled={loading}>
-            Subscribers
-          </Button>
-          <Button variant="outlined" onClick={() => handleExtract('sendClassifications')} disabled={loading}>
-            Send Classifications
-          </Button>
-          <Button variant="outlined" onClick={() => handleExtract('journeys')} disabled={loading}>
-            Journeys
-          </Button>
-          <Button variant="outlined" onClick={() => handleExtract('lists')} disabled={loading}>
-            Lists
-          </Button>
-          <Button variant="outlined" onClick={() => handleExtract('content-assets')} disabled={loading}>
-            Assets-Content
-          </Button>
-          {loading && <CircularProgress />}
-          {error && (
-            <Typography color="error" gutterBottom>
-              {error}
-            </Typography>
-          )}
-          {!loading && !error && extractedData && (
-            <DataDisplay 
-              data={extractedData} 
-              type={selectedDataType}
-            />
-          )}
+          {/* Add more buttons for other data types */}
         </div>
+      )}
+      {extractedData && Object.keys(extractedData).length > 0 && (
+        <DataDisplay data={extractedData} type={selectedDataType} />
       )}
     </Container>
   );

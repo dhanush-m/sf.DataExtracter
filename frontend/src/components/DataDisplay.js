@@ -1,97 +1,69 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
-import './DataDisplay.css'; // Add this import
 
 const DataDisplay = ({ data, type }) => {
-  if (!data || Object.keys(data).length === 0) {
-    return <Typography variant="body1">No data available</Typography>;
+  console.log('DataDisplay received data:', data);
+  console.log('DataDisplay received type:', type);
+
+  const processData = (inputData) => {
+    if (!inputData) return null;
+    if (typeof inputData === 'string') {
+      try {
+        return JSON.parse(inputData);
+      } catch (error) {
+        console.error('Failed to parse data string:', error);
+        return null;
+      }
+    }
+    if (Array.isArray(inputData)) return inputData;
+    if (typeof inputData === 'object') {
+      // Check if the data is nested inside an object
+      const possibleArrays = Object.values(inputData).filter(Array.isArray);
+      if (possibleArrays.length > 0) return possibleArrays[0];
+    }
+    return null;
+  };
+
+  const processedData = processData(data);
+
+  if (!processedData || processedData.length === 0) {
+    console.warn('No valid data available for', type);
+    return <Typography>No data available for {type}</Typography>;
   }
 
-  const renderTable = () => {
-    if (type === 'dataExtensions') {
-      return renderDataExtensionsTable();
-    }
-    return renderGenericTable();
-  };
-
-  const renderDataExtensionsTable = () => {
-    // Parse the SOAP response
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(data, "text/xml");
-    const results = xmlDoc.getElementsByTagName("Results");
-    const dataExtensions = Array.from(results).map(result => ({
-      Name: result.getElementsByTagName("Name")[0]?.textContent || '',
-      CustomerKey: result.getElementsByTagName("CustomerKey")[0]?.textContent || '',
-      ObjectID: result.getElementsByTagName("ObjectID")[0]?.textContent || '',
-      IsSendable: result.getElementsByTagName("IsSendable")[0]?.textContent === 'true',
-      SendableSubscriberField: result.getElementsByTagName("SendableSubscriberField.Name")[0]?.textContent || '',
-    }));
-
-    return (
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Customer Key</TableCell>
-              <TableCell>Object ID</TableCell>
-              <TableCell>Is Sendable</TableCell>
-              <TableCell>Sendable Subscriber Field</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {dataExtensions.map((de, index) => (
-              <TableRow key={index}>
-                <TableCell>{de.Name}</TableCell>
-                <TableCell>{de.CustomerKey}</TableCell>
-                <TableCell>{de.ObjectID}</TableCell>
-                <TableCell>{de.IsSendable ? 'Yes' : 'No'}</TableCell>
-                <TableCell>{de.SendableSubscriberField}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  };
-
-  const renderGenericTable = () => {
-    const headers = Object.keys(data[0] || {});
-    return (
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {headers.map((header, index) => (
-                <TableCell key={index}>{header}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map((item, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {headers.map((header, cellIndex) => (
-                  <TableCell key={cellIndex}>{item[header]}</TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  };
+  const headers = ['S.No', ...Object.keys(processedData[0])];
 
   return (
-    <div className="data-display">
+    <TableContainer component={Paper}>
       <Typography variant="h6" gutterBottom>
-        {type.charAt(0).toUpperCase() + type.slice(1)}
+        {type} Data
       </Typography>
-      <div className="table-container">
-        <table>
-          {renderTable()}
-        </table>
-      </div>
-    </div>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {headers.map((header) => (
+              <TableCell key={header}>{header}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {processedData.map((item, index) => (
+            <TableRow key={index}>
+              <TableCell>{index + 1}</TableCell>
+              {headers.slice(1).map((header) => (
+                <TableCell key={`${index}-${header}`}>
+                  {item[header] !== undefined && item[header] !== null
+                    ? typeof item[header] === 'object'
+                      ? JSON.stringify(item[header])
+                      : String(item[header])
+                    : 'N/A'}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

@@ -2,10 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const { exec } = require('child_process');
 const bldr = require('@basetime/bldr-sfmc');
 const xml2js = require('xml2js');
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const app = express();
 let port = process.env.PORT || 5000;
@@ -96,7 +94,7 @@ async function fetchDataExtensions(accessToken, subdomain) {
     const dataExtensions = result['soap:Envelope']['soap:Body'].RetrieveResponseMsg.Results;
 
     // If dataExtensions is not an array, wrap it in an array
-    return Array.isArray(dataExtensions) ? dataExtensions : [xtensions];
+    return Array.isArray(dataExtensions) ? dataExtensions : [dataExtensions];
   } catch (error) {
     console.error('Error fetching data extensions:', error);
     throw error;
@@ -429,11 +427,11 @@ async function fetchListSoap(accessToken, subdomain) {
     console.log('SOAP Response:', response.data);
 
     const parser = new xml2js.Parser({ explicitArray: false, ignoreAttrs: true });
-    const result = await parser.parseStringPromise(response.data);
-    
-    console.log('Parsed SOAP Response:', JSON.stringify(result, null, 2));
+    const parsedResult = await parser.parseStringPromise(response.data);
 
-    const lists = result['soap:Envelope']['soap:Body'].RetrieveResponseMsg.Results;
+    console.log('Parsed SOAP Response:', JSON.stringify(parsedResult, null, 2));
+
+    const lists = parsedResult['soap:Envelope']['soap:Body'].RetrieveResponseMsg.Results;
 
     return Array.isArray(lists) ? lists : [lists];
   } catch (error) {
